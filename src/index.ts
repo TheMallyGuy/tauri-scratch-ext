@@ -1,3 +1,4 @@
+import { canSendNotif, canSendNotifReport, reqNotifPerm, requestNotifBlock, sendNotif, sendNotifBlock } from "./blocks/notification";
 import { archReporter, famliyReporter, getArch, getFamliy, getLocale, getplatform, localeReporter, platformReporter } from "./blocks/os";
 import {
     closeBlock, closeWindow,
@@ -14,6 +15,8 @@ import {
     saveWindowStateBlock,
     setWindowMaxSize, setWindowMaxSizeBlock,
     setWindowMinSize, setWindowMinSizeBlock,
+    setWindowSize,
+    setWindowSizeBlock,
     setWindowTitle, setWindowTitleBlock,
     windowHeightReporter, windowWidthReporter
 } from "./blocks/windowControl";
@@ -52,21 +55,33 @@ import { icon } from "./icon";
                     isFullscreenReporter,
                     isCloseReporter,
                     setWindowTitleBlock,
+                    setWindowSizeBlock,
                     setWindowMinSizeBlock,
                     setWindowMaxSizeBlock,
                     saveWindowStateBlock,
                     restoreWindowStateBlock,
                     closeBlock,
+                    '---' as const,
+                    {
+                        blockType: Scratch.BlockType.LABEL,
+                        text: "Notifications"
+                    } as unknown as Scratch.Block,
+                    canSendNotifReport,
+                    requestNotifBlock,
+                    sendNotifBlock
                 ]
             }
         },
         getFamliy,
+        canSendNotif,
         getplatform,
         getArch,
         getLocale,
         getWWidth,
+        setWindowSize,
         getWHeight,
         setWindowTitle,
+        sendNotif,
         setWindowMinSize,
         setWindowMaxSize,
         closeWindow,
@@ -75,6 +90,7 @@ import { icon } from "./icon";
         saveWindowState,
         isFocused,
         isFullscreen,
+        reqNotifPerm,
     }
 
     Scratch.extensions.register(extension)

@@ -73,6 +73,24 @@ export async function setWindowTitle(args: ScratchBlockArgs<typeof setWindowTitl
     await getCurrentWebviewWindow().setTitle(args.TITLE)
 }
 
+export const setWindowSizeBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "setWindowSize",
+    text: "Set window size to [WIDTH] width [HEIGHT] height",
+    arguments: {
+        WIDTH: {
+            type: Scratch.ArgumentType.NUMBER
+        },
+        HEIGHT: {
+            type: Scratch.ArgumentType.NUMBER
+        }
+    }
+} as const
+
+export async function setWindowSize(args: ScratchBlockArgs<typeof setWindowMinSizeBlock>) {
+    await invoke("set_window_size", { width: args.WIDTH, height: args.HEIGHT })
+}
+
 export const setWindowMinSizeBlock = {
     blockType: Scratch.BlockType.COMMAND,
     opcode: "setWindowMinSize",
