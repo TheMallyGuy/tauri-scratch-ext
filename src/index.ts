@@ -8,6 +8,10 @@ import {
     isFocusedReporter,
     isFullscreen,
     isFullscreenReporter,
+    restoreWindowState,
+    restoreWindowStateBlock,
+    saveWindowState,
+    saveWindowStateBlock,
     setWindowMaxSize, setWindowMaxSizeBlock,
     setWindowMinSize, setWindowMinSizeBlock,
     setWindowTitle, setWindowTitleBlock,
@@ -50,6 +54,8 @@ import { icon } from "./icon";
                     setWindowTitleBlock,
                     setWindowMinSizeBlock,
                     setWindowMaxSizeBlock,
+                    saveWindowStateBlock,
+                    restoreWindowStateBlock,
                     closeBlock,
                 ]
             }
@@ -65,6 +71,8 @@ import { icon } from "./icon";
         setWindowMaxSize,
         closeWindow,
         isCloseable,
+        restoreWindowState,
+        saveWindowState,
         isFocused,
         isFullscreen,
     }

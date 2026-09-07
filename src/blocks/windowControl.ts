@@ -109,6 +109,26 @@ export async function setWindowMaxSize(args: ScratchBlockArgs<typeof setWindowMa
     await invoke("set_window_max_size", { width: args.WIDTH, height: args.HEIGHT })
 }
 
+export const saveWindowStateBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "saveWindowState",
+    text: "Save window state",
+}
+
+export async function saveWindowState() {
+    await saveWindowState();
+}
+
+export const restoreWindowStateBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "restoreWindowState",
+    text: "Restore window state",
+}
+
+export async function restoreWindowState() {
+    await restoreWindowState();
+}
+
 export const closeBlock = {
     blockType: Scratch.BlockType.COMMAND,
     opcode: "closeWindow",
