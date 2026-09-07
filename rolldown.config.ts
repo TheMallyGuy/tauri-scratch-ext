@@ -3,6 +3,7 @@ import { defineConfig } from 'rolldown'
 export default defineConfig({
       input: 'src/withL10n.ts',
       output: {
+            comments: false,
             file: 'output/extension.js',
             format: 'es',
             // https://github.com/FurryR/scratch-ext/blob/main/tsup.config.ts
