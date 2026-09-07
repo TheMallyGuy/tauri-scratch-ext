@@ -31,11 +31,7 @@
     "typescript": "^7"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@tauri-apps/api": "^2.11.1",
     "@tauri-apps/plugin-os": "^2.3.2"
-=======
-    "@tauri-apps/api": "^2.11.1"
->>>>>>> fc3f3b3937d91b6435550cc20420ac3e4fd6b0f1
   }
 }
