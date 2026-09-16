@@ -25,6 +25,7 @@ import {
     restoreWindowStateBlock,
     saveWindowState,
     saveWindowStateBlock,
+    setWindowDecorationsByLabel, setWindowDecorationsByLabelBlock,
     setWindowMaxSize, setWindowMaxSizeBlock,
     setWindowMinSize, setWindowMinSizeBlock,
     setWindowSize,
@@ -88,6 +89,7 @@ import { icon } from "./icon";
                     getWHeightByLabelReporter,
                     focusWindowByLabelBlock,
                     closeWindowByLabelBlock,
+                    setWindowDecorationsByLabelBlock,
                     evalInWindowBlock,
                     '---' as const,
                     {
@@ -146,6 +148,7 @@ import { icon } from "./icon";
         getWHeightByLabel,
         focusWindowByLabel,
         closeWindowByLabel,
+        setWindowDecorationsByLabel,
         evalInWindow,
         sendDataToWindow,
         lastReceivedData,

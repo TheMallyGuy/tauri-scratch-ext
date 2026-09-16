@@ -123,10 +123,6 @@ export const createWindowBlock = {
             type: Scratch.ArgumentType.STRING,
             defaultValue: "new-window"
         },
-        // Defaults to this same page's URL, since that's what "another
-        // window running this project" means for a packaged single-page
-        // Tauri app - it boots the same sprites/code, just a fresh instance.
-        // Point it elsewhere only if you're intentionally loading something else.
         URL: {
             type: Scratch.ArgumentType.STRING,
             defaultValue: window.location.href
@@ -162,7 +158,6 @@ export const createWindowBlock = {
 const AUTO_GREEN_FLAG_PARAM = "tauriAutoGreenFlag"
 
 const CLONE_PROJECT_PARAM = "cloneProjectFile"
-const isCloningProject = new URLSearchParams(window.location.search).has(CLONE_PROJECT_PARAM)
 
 if (new URLSearchParams(window.location.search).has(AUTO_GREEN_FLAG_PARAM)) {
     let pressed = false
@@ -175,25 +170,44 @@ if (new URLSearchParams(window.location.search).has(AUTO_GREEN_FLAG_PARAM)) {
         Scratch.vm.greenFlag()
     }
 
-    if (isCloningProject) {
+    const isReady = () =>
+        Scratch.vm.runtime.targets.length > 0 &&
+        Scratch.vm.runtime.getOpcodeFunction("tauriExtension_createWindow") !== undefined
 
-        Scratch.vm.runtime.once("PROJECT_LOADED", press)
-    } else {
-
-        const pressWhenReady = () => {
-            if (pressed || Scratch.vm.runtime.targets.length === 0) return
-            press()
-        }
-        Scratch.vm.runtime.once("PROJECT_LOADED", pressWhenReady)
-        pressWhenReady()
-        const timer = setInterval(() => {
-            if (pressed) {
-                clearInterval(timer)
-                return
-            }
-            pressWhenReady()
-        }, 200)
+    const pressWhenReady = () => {
+        if (pressed || !isReady()) return
+        press()
     }
+    Scratch.vm.runtime.once("PROJECT_LOADED", pressWhenReady)
+    pressWhenReady()
+    const timer = setInterval(() => {
+        if (pressed) {
+            clearInterval(timer)
+            return
+        }
+        pressWhenReady()
+    }, 200)
+}
+
+if (new URLSearchParams(window.location.search).has("tauriHideStageControls")) {
+    const style = document.createElement("style")
+    style.textContent =
+        '[class*="stage-header-wrapper-overlay"] { display: none !important; }' +
+        '[class*="stage-wrapper"][class*="full-screen"] { top: 0 !important; }'
+    document.head.appendChild(style)
+
+    const STAGE_HEADER_RESERVED_PX = 56 // 44 (menu) + 12 (border/spacing)
+    const realInnerHeightDescriptor = Object.getOwnPropertyDescriptor(window, "innerHeight")
+        ?? Object.getOwnPropertyDescriptor(Window.prototype, "innerHeight")
+    if (realInnerHeightDescriptor?.get) {
+        const getRealInnerHeight = realInnerHeightDescriptor.get.bind(window)
+        Object.defineProperty(window, "innerHeight", {
+            configurable: true,
+            get: () => getRealInnerHeight() + STAGE_HEADER_RESERVED_PX
+        })
+    }
+
+    window.dispatchEvent(new Event("resize"))
 }
 
 export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlock>) {
@@ -203,6 +217,9 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
     }
 
     const url = new URL(args.URL, window.location.href)
+    if (url.hostname === window.location.hostname && url.protocol !== window.location.protocol) {
+        url.protocol = window.location.protocol
+    }
 
     url.searchParams.set("tauriExtWindow", "1")
 
@@ -222,19 +239,41 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
         url.searchParams.set(AUTO_GREEN_FLAG_PARAM, "1")
     }
 
-    const webview = new WebviewWindow(args.LABEL, {
-        url: url.toString(),
+    const windowOptions = {
         title: args.TITLE,
         width: args.WIDTH,
         height: args.HEIGHT
-    })
+    }
 
+    const pathExists = await fetch(url.toString(), { method: "GET" })
+        .then(response => {
+            response.body?.cancel()
+            return response.ok
+        })
+        .catch(() => false)
+
+    const finalUrl = pathExists ? url : (() => {
+        const fallbackUrl = new URL(window.location.href)
+        fallbackUrl.search = url.search
+        return fallbackUrl
+    })()
+
+    await createWebviewWindow(args.LABEL, finalUrl.toString(), windowOptions)
+
+    refreshWindowLabelCache()
+}
+
+async function createWebviewWindow(
+    label: string,
+    url: string,
+    options: Omit<ConstructorParameters<typeof WebviewWindow>[1], "url">
+) {
+    const webview = new WebviewWindow(label, { ...options, url })
     await new Promise<void>((resolve, reject) => {
         webview.once("tauri://created", () => resolve())
         webview.once("tauri://error", (event) => reject(new Error(`Failed to create window: ${JSON.stringify(event.payload)}`)))
     })
-
-    refreshWindowLabelCache()
+    return webview
 }
 
 export const setWindowTitleBlock = {
@@ -438,6 +477,24 @@ export const closeWindowByLabelBlock = {
 export async function closeWindowByLabel(args: ScratchBlockArgs<typeof closeWindowByLabelBlock>) {
     const targetWindow = await getWindowByLabel(args.LABEL)
     await targetWindow.close()
+}
+
+export const setWindowDecorationsByLabelBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "setWindowDecorationsByLabel",
+    text: "Set window labeled [LABEL] decorations to [DECORATIONS]",
+    arguments: {
+        LABEL: windowLabelArgument,
+        DECORATIONS: {
+            type: Scratch.ArgumentType.BOOLEAN,
+            defaultValue: true
+        }
+    }
+} as const
+
+export async function setWindowDecorationsByLabel(args: ScratchBlockArgs<typeof setWindowDecorationsByLabelBlock>) {
+    const targetWindow = await getWindowByLabel(args.LABEL)
+    await targetWindow.setDecorations(args.DECORATIONS)
 }
 
 export const evalInWindowBlock = {
