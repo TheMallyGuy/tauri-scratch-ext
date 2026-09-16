@@ -1,14 +1,26 @@
+import { lastReceivedData, lastReceivedDataReporter, sendDataToWindow, sendDataToWindowBlock, whenDataReceivedBlock } from "./blocks/messaging";
 import { canSendNotif, canSendNotifReport, reqNotifPerm, requestNotifBlock, sendNotif, sendNotifBlock } from "./blocks/notification";
 import { archReporter, famliyReporter, getArch, getFamliy, getLocale, getplatform, localeReporter, platformReporter } from "./blocks/os";
+import { applyProjectState, applyProjectStateBlock, captureProjectState, captureProjectStateBlock } from "./blocks/projectState";
 import {
     closeBlock, closeWindow,
-    getWHeight, getWWidth,
+    closeWindowByLabel, closeWindowByLabelBlock,
+    createWindow, createWindowBlock,
+    evalInWindow, evalInWindowBlock,
+    focusWindowByLabel, focusWindowByLabelBlock,
+    getWHeight, getWHeightByLabel, getWHeightByLabelReporter,
+    getWWidth, getWWidthByLabel, getWWidthByLabelReporter,
     isCloseable,
+    isCloseableByLabel, isCloseableByLabelReporter,
     isCloseReporter,
     isFocused,
+    isFocusedByLabel, isFocusedByLabelReporter,
     isFocusedReporter,
     isFullscreen,
+    isFullscreenByLabel, isFullscreenByLabelReporter,
     isFullscreenReporter,
+    isWindowLabel, isWindowLabelReporter,
+    myWindowLabel, myWindowLabelReporter,
     restoreWindowState,
     restoreWindowStateBlock,
     saveWindowState,
@@ -18,7 +30,7 @@ import {
     setWindowSize,
     setWindowSizeBlock,
     setWindowTitle, setWindowTitleBlock,
-    windowHeightReporter, windowWidthReporter
+    windowHeightReporter, windowLabelMenu, windowWidthReporter
 } from "./blocks/windowControl";
 import { icon } from "./icon";
 
@@ -54,6 +66,9 @@ import { icon } from "./icon";
                     isFocusedReporter,
                     isFullscreenReporter,
                     isCloseReporter,
+                    myWindowLabelReporter,
+                    isWindowLabelReporter,
+                    createWindowBlock,
                     setWindowTitleBlock,
                     setWindowSizeBlock,
                     setWindowMinSizeBlock,
@@ -64,12 +79,41 @@ import { icon } from "./icon";
                     '---' as const,
                     {
                         blockType: Scratch.BlockType.LABEL,
+                        text: "Other Windows"
+                    } as unknown as Scratch.Block,
+                    isFocusedByLabelReporter,
+                    isFullscreenByLabelReporter,
+                    isCloseableByLabelReporter,
+                    getWWidthByLabelReporter,
+                    getWHeightByLabelReporter,
+                    focusWindowByLabelBlock,
+                    closeWindowByLabelBlock,
+                    evalInWindowBlock,
+                    '---' as const,
+                    {
+                        blockType: Scratch.BlockType.LABEL,
+                        text: "Cross-Window Messaging"
+                    } as unknown as Scratch.Block,
+                    sendDataToWindowBlock,
+                    whenDataReceivedBlock,
+                    lastReceivedDataReporter,
+                    captureProjectStateBlock,
+                    applyProjectStateBlock,
+                    {
+                        blockType: Scratch.BlockType.LABEL,
                         text: "Notifications"
                     } as unknown as Scratch.Block,
                     canSendNotifReport,
                     requestNotifBlock,
-                    sendNotifBlock
-                ]
+                    sendNotifBlock,
+                    '---' as const,
+                ],
+                menus: {
+                    windowLabelMenu: {
+                        acceptReporters: true,
+                        items: "windowLabelMenu"
+                    }
+                }
             }
         },
         getFamliy,
@@ -78,6 +122,7 @@ import { icon } from "./icon";
         getArch,
         getLocale,
         getWWidth,
+        createWindow,
         setWindowSize,
         getWHeight,
         setWindowTitle,
@@ -90,7 +135,22 @@ import { icon } from "./icon";
         saveWindowState,
         isFocused,
         isFullscreen,
+        myWindowLabel,
+        isWindowLabel,
         reqNotifPerm,
+        windowLabelMenu,
+        isFocusedByLabel,
+        isFullscreenByLabel,
+        isCloseableByLabel,
+        getWWidthByLabel,
+        getWHeightByLabel,
+        focusWindowByLabel,
+        closeWindowByLabel,
+        evalInWindow,
+        sendDataToWindow,
+        lastReceivedData,
+        captureProjectState,
+        applyProjectState,
     }
 
     Scratch.extensions.register(extension)
