@@ -1,7 +1,8 @@
 import { invoke } from "@tauri-apps/api/core"
 import { join, tempDir } from "@tauri-apps/api/path"
-import { getCurrentWebviewWindow, WebviewWindow } from "@tauri-apps/api/webviewWindow"
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { Window } from "@tauri-apps/api/window";
+import { createWebviewWindow } from "../tauri/webivew";
 
 // reporters
 
@@ -263,18 +264,6 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
     refreshWindowLabelCache()
 }
 
-async function createWebviewWindow(
-    label: string,
-    url: string,
-    options: Omit<ConstructorParameters<typeof WebviewWindow>[1], "url">
-) {
-    const webview = new WebviewWindow(label, { ...options, url })
-    await new Promise<void>((resolve, reject) => {
-        webview.once("tauri://created", () => resolve())
-        webview.once("tauri://error", (event) => reject(new Error(`Failed to create window: ${JSON.stringify(event.payload)}`)))
-    })
-    return webview
-}
 
 export const setWindowTitleBlock = {
     blockType: Scratch.BlockType.COMMAND,
