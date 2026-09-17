@@ -1,7 +1,7 @@
 import { emitTo, listen } from "@tauri-apps/api/event"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { registerBlock } from "../registry"
-import { windowLabelArgument } from "./windowControl"
+import { windowLabelArgument } from "./window/shared"
 
 const MESSAGE_EVENT = "tauriExtension-window-message"
 

@@ -1,7 +1,7 @@
 import "./blocks/os";
 import "./blocks/screen";
 import "./blocks/pointer";
-import "./blocks/windowControl";
+import "./blocks/window";
 import "./blocks/messaging";
 import "./blocks/projectState";
 import "./blocks/notification";
