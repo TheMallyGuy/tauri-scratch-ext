@@ -1,10 +1,11 @@
 import { invoke } from "@tauri-apps/api/core"
 import { join, tempDir } from "@tauri-apps/api/path"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
-import { Window } from "@tauri-apps/api/window"
+import { getCurrentWindow, Window } from "@tauri-apps/api/window"
 import { registerBlock } from "../../registry"
 import { createWebviewWindow } from "../../tauri/webivew"
 import { getWindowByLabel, refreshWindowLabelCache, windowLabelArgument } from "./shared"
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 
 export const createWindowBlock = {
     blockType: Scratch.BlockType.COMMAND,
@@ -227,6 +228,28 @@ export async function setWindowMaxSize(args: ScratchBlockArgs<typeof setWindowMa
     await invoke("set_window_max_size", { width: args.WIDTH, height: args.HEIGHT })
 }
 
+export const minimizeWindowBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "minimizeCurrentWindow",
+    text: "Minimize Current window",
+    func: "minimizeWindow"
+} satisfies Scratch.Block
+
+export async function minimizeWindow() {
+    await getCurrentWindow().minimize()
+}
+
+export const focusWindowBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "focusWindowCurrentWindow",
+    text: "Focus Current window",
+    func: "focusWindow"
+} satisfies Scratch.Block
+
+export async function focusWindow() {
+    await getCurrentWindow().setFocus();
+}
+
 export const saveWindowStateBlock = {
     blockType: Scratch.BlockType.COMMAND,
     opcode: "saveWindowState",
@@ -260,6 +283,8 @@ export async function closeWindow() {
 registerBlock("Window", createWindowBlock, createWindow)
 registerBlock("Window", setWindowTitleBlock, setWindowTitle)
 registerBlock("Window", setWindowSizeBlock, setWindowSize)
+registerBlock("Window", minimizeWindowBlock, minimizeWindow)
+registerBlock("Window", focusWindowBlock, focusWindow)
 registerBlock("Window", setWindowMinSizeBlock, setWindowMinSize)
 registerBlock("Window", setWindowMaxSizeBlock, setWindowMaxSize)
 registerBlock("Window", saveWindowStateBlock, saveWindowState)

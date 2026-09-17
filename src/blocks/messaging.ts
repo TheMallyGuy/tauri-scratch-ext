@@ -1,4 +1,4 @@
-import { emitTo, listen } from "@tauri-apps/api/event"
+import { emitTo, listen, once } from "@tauri-apps/api/event"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { registerBlock } from "../registry"
 import { windowLabelArgument } from "./window/shared"
@@ -46,6 +46,25 @@ export function lastReceivedData() {
     return lastReceivedPayload
 }
 
+export const waitUntilEventBlock = {
+    blockType: Scratch.BlockType.COMMAND,
+    opcode: "waitUntilEvent",
+    text: "Wait until [EVENT] event is emitted",
+    arguments: {
+        EVENT: {
+            type: Scratch.ArgumentType.STRING,
+            defaultValue: MESSAGE_EVENT
+        }
+    }
+} as const
+
+export async function waitUntilEvent(args: ScratchBlockArgs<typeof waitUntilEventBlock>) {
+    await new Promise<void>((resolve) => {
+        once(args.EVENT, () => resolve())
+    })
+}
+
 registerBlock("Cross-Window Messaging", sendDataToWindowBlock, sendDataToWindow)
+registerBlock("Cross-Window Messaging", waitUntilEventBlock, waitUntilEvent)
 registerBlock("Cross-Window Messaging", whenDataReceivedBlock)
 registerBlock("Cross-Window Messaging", lastReceivedDataReporter, lastReceivedData)
