@@ -9,9 +9,22 @@ import { icon } from "./icon";
 import { buildExtensionBlocks, getMenus, getMethods } from "./registry";
 
 
-; (function (Scratch) {
+; (async function (Scratch) {
     if (!Scratch.extensions.unsandboxed) {
         throw new Error("Please run Tauri Extension without sandbox!")
+    }
+
+    if (!window.__TAURI__) {
+        const modal = await (ScratchBlocks as any).customPrompt({
+            title: "Error",
+        }, {
+            content: { width: "500px" }
+        }, [
+            { name: "OK", role: "ok", callback: () => console.log("Confirmed") },
+            { name: "Cancel", role: "close", callback: () => console.log("Cancelled") }
+        ]);
+
+        modal.appendChild(document.createTextNode("Please run this extension in PenguinDesktop.\nhttps://github.com/TheMallyGuy/penguin-desktop"));
     }
 
     const extension = {

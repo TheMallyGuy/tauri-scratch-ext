@@ -53,6 +53,9 @@ const AUTO_GREEN_FLAG_PARAM = "tauriAutoGreenFlag"
 
 const CLONE_PROJECT_PARAM = "cloneProjectFile"
 
+const SECURITY_BYPASS_PARAM = "tauriExtSecureBypass"
+const SECURITY_BYPASS_TOKEN = "tw-ext-scratch-9f3a1c"
+
 if (new URLSearchParams(window.location.search).has(AUTO_GREEN_FLAG_PARAM)) {
     let pressed = false
     const press = () => {
@@ -116,6 +119,7 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
     }
 
     url.searchParams.set("tauriExtWindow", "1")
+    url.searchParams.set(SECURITY_BYPASS_PARAM, SECURITY_BYPASS_TOKEN)
 
     if (args.HIDE_STAGE_CONTROLS) {
         url.searchParams.set("tauriHideStageControls", "1")
@@ -135,12 +139,15 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
         })()
         : Promise.resolve(null)
 
-    const pathExistsCheck = fetch(url.toString(), { method: "GET" })
-        .then(response => {
-            response.body?.cancel()
-            return response.ok
-        })
-        .catch(() => false)
+
+    const pathExistsCheck = url.origin === window.location.origin
+        ? Promise.resolve(true)
+        : fetch(url.toString(), { method: "GET" })
+            .then(response => {
+                response.body?.cancel()
+                return response.ok
+            })
+            .catch(() => true)
 
     const [clonedFilePath, pathExists] = await Promise.all([cloneProject, pathExistsCheck])
 

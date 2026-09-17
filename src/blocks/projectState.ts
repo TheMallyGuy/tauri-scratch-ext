@@ -30,7 +30,9 @@ export const captureProjectStateBlock = {
 } as const
 
 export function captureProjectState() {
-    const runtime = Scratch.vm.runtime
+    const runtime = Scratch.vm?.runtime
+    if (!runtime) return JSON.stringify({ targets: {} })
+
     const state: CapturedProjectState = { targets: {} }
 
     for (const target of runtime.targets) {
@@ -70,7 +72,9 @@ export const applyProjectStateBlock = {
 } as const
 
 export function applyProjectState(args: ScratchBlockArgs<typeof applyProjectStateBlock>) {
-    const runtime = Scratch.vm.runtime
+    const runtime = Scratch.vm?.runtime
+    if (!runtime) return
+
     const state = JSON.parse(args.STATE) as CapturedProjectState
 
     for (const target of runtime.targets) {
