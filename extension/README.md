@@ -1,6 +1,5 @@
 # Extensions
 
-If you perfer lighter in sizes, choose small!
+If you prefer lighter in sizes, choose small!
 
-## For V1: 
-If you perfer lighter in sizes, choose formatted!
+V1 is deprecated. Please use later version for compatibility!
