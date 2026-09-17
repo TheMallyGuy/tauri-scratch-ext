@@ -9,6 +9,7 @@ export default defineConfig({
             // https://github.com/FurryR/scratch-ext/blob/main/tsup.config.ts
             banner:
                   '// If you want to see the source code, please view: https://github.com/TheMallyGuy/tauri-scratch-ext \n' +
+                  '// Do not modify this extension for malicious uses.\n' +
                   '// Generated using Rolldown.rs by VOID(0). (https://rolldown.rs/)\n' +
                   '// Name: Tauri Extension\n' +
                   '// ID: tauriExtension\n' +
