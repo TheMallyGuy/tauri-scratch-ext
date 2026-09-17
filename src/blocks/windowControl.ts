@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { join, tempDir } from "@tauri-apps/api/path"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { Window } from "@tauri-apps/api/window";
+import { registerBlock, registerMenu } from "../registry"
 import { createWebviewWindow } from "../tauri/webivew";
 
 // reporters
@@ -502,3 +503,31 @@ export const evalInWindowBlock = {
 export async function evalInWindow(args: ScratchBlockArgs<typeof evalInWindowBlock>) {
     await invoke("eval_in_window", { label: args.LABEL, script: args.SCRIPT })
 }
+
+registerMenu("windowLabelMenu", { acceptReporters: true, items: "windowLabelMenu" }, windowLabelMenu)
+
+registerBlock("Window", windowWidthReporter, getWWidth)
+registerBlock("Window", windowHeightReporter, getWHeight)
+registerBlock("Window", isFocusedReporter, isFocused)
+registerBlock("Window", isFullscreenReporter, isFullscreen)
+registerBlock("Window", isCloseReporter, isCloseable)
+registerBlock("Window", myWindowLabelReporter, myWindowLabel)
+registerBlock("Window", isWindowLabelReporter, isWindowLabel)
+registerBlock("Window", createWindowBlock, createWindow)
+registerBlock("Window", setWindowTitleBlock, setWindowTitle)
+registerBlock("Window", setWindowSizeBlock, setWindowSize)
+registerBlock("Window", setWindowMinSizeBlock, setWindowMinSize)
+registerBlock("Window", setWindowMaxSizeBlock, setWindowMaxSize)
+registerBlock("Window", saveWindowStateBlock, saveWindowState)
+registerBlock("Window", restoreWindowStateBlock, restoreWindowState)
+registerBlock("Window", closeBlock, closeWindow)
+
+registerBlock("Other Windows", isFocusedByLabelReporter, isFocusedByLabel)
+registerBlock("Other Windows", isFullscreenByLabelReporter, isFullscreenByLabel)
+registerBlock("Other Windows", isCloseableByLabelReporter, isCloseableByLabel)
+registerBlock("Other Windows", getWWidthByLabelReporter, getWWidthByLabel)
+registerBlock("Other Windows", getWHeightByLabelReporter, getWHeightByLabel)
+registerBlock("Other Windows", focusWindowByLabelBlock, focusWindowByLabel)
+registerBlock("Other Windows", closeWindowByLabelBlock, closeWindowByLabel)
+registerBlock("Other Windows", setWindowDecorationsByLabelBlock, setWindowDecorationsByLabel)
+registerBlock("Other Windows", evalInWindowBlock, evalInWindow)

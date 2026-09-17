@@ -1,6 +1,7 @@
 // reporters
 
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
+import { registerBlock } from "../registry"
 
 export const canSendNotifReport = {
     blockType: Scratch.BlockType.REPORTER,
@@ -44,3 +45,7 @@ export const sendNotifBlock = {
 export async function sendNotif(args: ScratchBlockArgs<typeof sendNotifBlock>) {
     return await sendNotification({ title: args.TITLE, body: args.DESCRIPTION })
 }
+
+registerBlock("Notifications", canSendNotifReport, canSendNotif)
+registerBlock("Notifications", requestNotifBlock, reqNotifPerm)
+registerBlock("Notifications", sendNotifBlock, sendNotif)

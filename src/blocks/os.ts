@@ -1,4 +1,5 @@
 import { arch, family, locale, platform } from "@tauri-apps/plugin-os"
+import { registerBlock } from "../registry"
 
 export const famliyReporter = {
     blockType: Scratch.BlockType.REPORTER,
@@ -40,3 +41,8 @@ export const platformReporter = {
 export async function getplatform() {
     return platform()
 }
+
+registerBlock("OS", famliyReporter, getFamliy)
+registerBlock("OS", platformReporter, getplatform)
+registerBlock("OS", archReporter, getArch)
+registerBlock("OS", localeReporter, getLocale)

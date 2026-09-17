@@ -1,5 +1,6 @@
 import { emitTo, listen } from "@tauri-apps/api/event"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
+import { registerBlock } from "../registry"
 import { windowLabelArgument } from "./windowControl"
 
 const MESSAGE_EVENT = "tauriExtension-window-message"
@@ -44,3 +45,7 @@ export const lastReceivedDataReporter = {
 export function lastReceivedData() {
     return lastReceivedPayload
 }
+
+registerBlock("Cross-Window Messaging", sendDataToWindowBlock, sendDataToWindow)
+registerBlock("Cross-Window Messaging", whenDataReceivedBlock)
+registerBlock("Cross-Window Messaging", lastReceivedDataReporter, lastReceivedData)

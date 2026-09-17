@@ -1,3 +1,5 @@
+import { registerBlock } from "../registry"
+
 interface CapturedTargetState {
     x: number
     y: number
@@ -91,3 +93,6 @@ export function applyProjectState(args: ScratchBlockArgs<typeof applyProjectStat
 
     runtime.requestRedraw()
 }
+
+registerBlock("Cross-Window Messaging", captureProjectStateBlock, captureProjectState)
+registerBlock("Cross-Window Messaging", applyProjectStateBlock, applyProjectState)
