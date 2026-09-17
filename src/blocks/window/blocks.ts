@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { join, tempDir } from "@tauri-apps/api/path"
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow"
 import { getCurrentWindow, Window } from "@tauri-apps/api/window"
+import { writeFile } from "@tauri-apps/plugin-fs"
 import { registerBlock } from "../../registry"
 import { createWebviewWindow } from "../../tauri/webivew"
 import { getWindowByLabel, refreshWindowLabelCache, windowLabelArgument } from "./shared"
@@ -120,16 +121,31 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
         url.searchParams.set("tauriHideStageControls", "1")
     }
 
-    if (args.CLONE_PROJECT) {
-        const blob = await Scratch.vm.saveProjectSb3()
-        const bytes = Array.from(new Uint8Array(await blob.arrayBuffer()))
-        const filePath = await join(await tempDir(), `tauri-ext-clone-${args.LABEL}-${Date.now()}.sb3`)
-        await invoke("write_file", { file: filePath, contents: bytes })
-        url.searchParams.set(CLONE_PROJECT_PARAM, filePath)
-    }
-
     if (args.AUTO_GREEN_FLAG) {
         url.searchParams.set(AUTO_GREEN_FLAG_PARAM, "1")
+    }
+
+    const cloneProject = args.CLONE_PROJECT
+        ? (async () => {
+            const blob = await Scratch.vm.saveProjectSb3()
+            const bytes = new Uint8Array(await blob.arrayBuffer())
+            const filePath = await join(await tempDir(), `tauri-ext-clone-${args.LABEL}-${Date.now()}.sb3`)
+            await writeFile(filePath, bytes)
+            return filePath
+        })()
+        : Promise.resolve(null)
+
+    const pathExistsCheck = fetch(url.toString(), { method: "GET" })
+        .then(response => {
+            response.body?.cancel()
+            return response.ok
+        })
+        .catch(() => false)
+
+    const [clonedFilePath, pathExists] = await Promise.all([cloneProject, pathExistsCheck])
+
+    if (clonedFilePath != null) {
+        url.searchParams.set(CLONE_PROJECT_PARAM, clonedFilePath)
     }
 
     const windowOptions = {
@@ -137,13 +153,6 @@ export async function createWindow(args: ScratchBlockArgs<typeof createWindowBlo
         width: args.WIDTH,
         height: args.HEIGHT
     }
-
-    const pathExists = await fetch(url.toString(), { method: "GET" })
-        .then(response => {
-            response.body?.cancel()
-            return response.ok
-        })
-        .catch(() => false)
 
     const finalUrl = pathExists ? url : (() => {
         const fallbackUrl = new URL(window.location.href)
